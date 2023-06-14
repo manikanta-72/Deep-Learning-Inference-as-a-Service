@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resnetalt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: resnetalt
+  template:
+    metadata:
+      labels:
+        component: resnetalt
+    spec:
+      containers:
+        - name: resnetalt
+          image: beingme97/cs237-resnetalt-server:1.0
+          resources:
+            requests:
+              memory: "1024Mi"
+              cpu: "500m"
+            limits:
+              memory: "2048Mi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 8501
+          imagePullPolicy: Always
+          env:
+            - name: MODEL_NAME
+              value: "resnet_classification"

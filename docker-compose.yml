@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    
+  model-cluster-ip-service:
+    image: models/tfs_resnet
+    build: 
+      dockerfile: resnet_server.dockerfile
+    ports:
+      - '8501:8501'
+    
+  web:
+    image: frontend/flaskweb
+    build:
+      context: ./frontend/
+      dockerfile: ../flaskweb.dockerfile
+    ports:
+      - '8080:8080'
+    depends_on:
+      - rabbitmq
+    
+  rabbit_client:
+    image: receiver/rabbitmq
+    build:
+      context: ./rabbit_client/
+      dockerfile: ../rabbitclient.dockerfile
+    depends_on:
+      - rabbitmq

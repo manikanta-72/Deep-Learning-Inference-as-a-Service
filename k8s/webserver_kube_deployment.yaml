@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: flask-web
+  template:
+    metadata:
+      labels:
+        component: flask-web
+    spec:
+      containers:
+        - name: flask-web
+          image: beingme97/cs237-flask-web:1.0
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
