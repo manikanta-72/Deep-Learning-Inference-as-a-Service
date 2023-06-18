@@ -58,7 +58,7 @@ def tfserving_request(IMAGE_URL, model_name): #1
     # response.raise_for_status()
     #prediction = response['predictions'][0]
 
-    return np.argmax(answer)
+    return answer
 
 @app.route("/",methods=["GET","POST"])
 @app.route("/home",methods=["GET","POST"]) #1
