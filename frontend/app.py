@@ -14,10 +14,9 @@ import requests
 
 from send_queue import RabbitMqClient
 
+
 app = Flask(__name__)
 
-time.sleep(20)
-rabbitmq_client = RabbitMqClient()
 
 def tfserving_request(IMAGE_URL, model_name): #1
 
@@ -25,6 +24,8 @@ def tfserving_request(IMAGE_URL, model_name): #1
     Should change to grpc from json
 
     """
+
+    rabbitmq_client = RabbitMqClient()
 
     # The server URL specifies the endpoint of your server running the ResNet
     # model with the name "resnet" and using the predict interface.
@@ -72,20 +73,53 @@ def home():
 
     return render_template("index.html") #7
 
-@app.route("/test",methods=["GET","POST"]) #1
-def test():
+@app.route("/test1",methods=["GET","POST"]) #1
+def test1():
     if request.method == "POST": #2
         # resnet_classification is the model name
-        SERVER_URL1 = 'http://resnet-cluster-ip-service:8501/v1/models/resnet_classification:predict'
+        SERVER_URL1 = 'http://new-resnet-cluster-ip-service:8501/v1/models/resnet_classification:predict'
 
-        SERVER_URL2 = 'http://resnetalt-cluster-ip-service:8501/v1/models/resnet_classification:predict'
+        # predict_request = json.dumps(request.json)
+        # response = requests.post(SERVER_URL1, data=predict_request)
+        # response.raise_for_status() 
+        # prediction = response.json()['predictions'][0]
 
-        predict_request = json.dumps(request.json)
-        response = requests.post(SERVER_URL1, data=predict_request)
-        response.raise_for_status() 
-        prediction = response.json()['predictions'][0]
+        # return str(prediction)
 
-        return str(prediction)
+        rabbitmq_client = RabbitMqClient()
+
+        answer = rabbitmq_client.call(json.dumps(request.json))
+    
+        print("sender_answer:", answer)
+
+        # response = requests.post(SERVER_URL, data=predict_request)
+        # response.raise_for_status()
+        #prediction = response['predictions'][0]
+
+        return str(answer)
+
+@app.route("/test2",methods=["GET","POST"]) #1
+def test2():
+    if request.method == "POST": #2
+        # resnet_classification is the model name
+        SERVER_URL2 = 'http://new-resnetalt-cluster-ip-service:8501/v1/models/resnet_classification:predict'
+
+        # predict_request = json.dumps(request.json)
+        # response = requests.post(SERVER_URL2, data=predict_request)
+        # response.raise_for_status() 
+        # prediction = response.json()['predictions'][0]
+
+        # return str(prediction)   
+
+        answer = rabbitmq_client.call(json.dumps(request.json))
+    
+        print("sender_answer:", answer)
+
+        # response = requests.post(SERVER_URL, data=predict_request)
+        # response.raise_for_status()
+        #prediction = response['predictions'][0]
+
+        return str(answer)
 
 app.secret_key = "nlhkjtgjhfhvhjfyfgcjgdtdgcngcghdt"
 if __name__ == "__main__":

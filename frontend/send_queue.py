@@ -6,7 +6,7 @@ class RabbitMqClient(object):
 
     def __init__(self):
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='rabbitmq')
+            pika.ConnectionParameters(host='10.123.129.36')
         )
 
         self.channel = self.connection.channel()
@@ -39,5 +39,9 @@ class RabbitMqClient(object):
             body=str(n)
         )
         self.connection.process_data_events(time_limit=None)
+        
+        if self.connection.is_open:
+            self.connection.close()
+            
         return int(self.response)
     

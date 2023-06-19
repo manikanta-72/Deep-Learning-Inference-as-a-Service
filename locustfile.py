@@ -24,4 +24,4 @@ class MetricsLocust(HttpUser):
     def post_metrics(self):
         headers = {'Content-Type': 'application/json',}
 
-        self.client.post("/test", headers=headers, data=self.image_data)
+        self.client.post("/test1", headers=headers, data=self.image_data)

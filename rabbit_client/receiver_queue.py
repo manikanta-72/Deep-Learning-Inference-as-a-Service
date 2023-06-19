@@ -5,7 +5,7 @@ import numpy as np
 
 time.sleep(20)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='10.123.129.36'))
 
 channel = connection.channel()
 
@@ -14,7 +14,7 @@ channel.queue_declare(queue='rpc_queue')
 def on_request(ch, method, props, body):
     data = body
 
-    SERVER_URL = 'http://model-cluster-ip-service:8501/v1/models/resnet_classification:predict'
+    SERVER_URL = 'http://new-resnet-cluster-ip-service:8501/v1/models/resnet_classification:predict'
     
     response = requests.post(SERVER_URL, data= data)
 
