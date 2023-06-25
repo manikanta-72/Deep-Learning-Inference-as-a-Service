@@ -21,6 +21,7 @@ A client can use inference service by interacting with web application through e
 
 ## Application Middleware
 As soon as the user provides their query, these queries are then pushed to RabbitMQ. Here Web Applications acts as a publisher to RabbitMQ. In order to get the processed output back to the publisher for a remote consumer we implemented the RPC procedure with RabbitMQ. When a publisher publishes a message to the queue, it passes along a unique identifier for the message and information about the callback queue to which the consumer has to write the messages.
+
 ![alt_text](https://github.com/manikanta-72/Deep-Learning-Inference-as-a-Service/blob/main/rabbit_rpc%20(1).jpg)
 
 When RabbitClient(consumer) receives a message from a web application through RabbitMQ. It queries the ML Model server for further processing of images and inferences. Upon receiving a response from ML Model, it sends the response with a unique identifier along the callback queue it received as part of the query. We can use ‘routing keys’ to manage multiple queues and a variety of queries.
