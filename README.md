@@ -12,9 +12,24 @@ In order to facilitate a high volume of uses we add a load balancer and horizont
 5. GCP - To increase availability and testing.
 
 # System Design
+![alt_text](https://github.com/manikanta-72/Deep-Learning-Inference-as-a-Service/blob/main/final_sd.jpg)
 
+# Application Workflow
 
-Steps:
+## User workflow
+A client can use inference service by interacting with web application through either API requests or web browser. As web applications are being run in Google Cloud Platform(GCP), users can access it from any web browser or device. Clients need to provide input(Images for this project) and a query that they need to infer(Currently, Is it a cat or not ?). The backend of the system then processes the request and replies back the answer. We use HTTP protocol for communication between users and web applications.
+
+## Application Middleware
+As soon as the user provides their query, these queries are then pushed to RabbitMQ. Here Web Applications acts as a publisher to RabbitMQ. In order to get the processed output back to the publisher for a remote consumer we implemented the RPC procedure with RabbitMQ. When a publisher publishes a message to the queue, it passes along a unique identifier for the message and information about the callback queue to which the consumer has to write the messages.
+![alt_text](https://github.com/manikanta-72/Deep-Learning-Inference-as-a-Service/blob/main/rabbit_rpc%20(1).jpg)
+
+When RabbitClient(consumer) receives a message from a web application through RabbitMQ. It queries the ML Model server for further processing of images and inferences. Upon receiving a response from ML Model, it sends the response with a unique identifier along the callback queue it received as part of the query. We can use ‘routing keys’ to manage multiple queues and a variety of queries.
+
+## ML Model Server:
+We use a pre-trained object detection computer vision model Resnet. Resnet is trained on the ImageNet dataset which contains 1000 classes. We use this model to predict whether the given image is a cat or dog. As part of the project we serve two different models one for cat detection and other for dog detection. Apart from these tasks we can have any number and variety of ML models as our backend. Each of these models host a web server to process the requests. And each of them can be containerized as an individual image. In addition, our ML model server also
+keeps updated with the latest model. We periodically fetch the latest model from the TensorFlow server. To prevent any downtime during the model update, we used a rolling deployment strategy where the old pods are deleted one by one as the new pods with the latest model update them.
+
+# Steps to run:
 ** For serving from Docker
 
 docker-compose up
